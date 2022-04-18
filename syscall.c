@@ -106,6 +106,8 @@ extern int sys_uptime(void);
 extern int sys_getyear(void);
 extern int sys_getnextprime(void);
 extern int sys_getcallcount(void);
+extern int sys_getmostcaller(void);
+extern int sys_waitforprocess(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -132,6 +134,8 @@ static int (*syscalls[])(void) = {
 [SYS_getyear] sys_getyear,
 [SYS_getnextprime] sys_getnextprime,
 [SYS_getcallcount] sys_getcallcount,
+[SYS_getmostcaller] sys_getmostcaller,
+[SYS_waitforprocess] sys_waitforprocess,
 };
 
 void
@@ -139,11 +143,13 @@ syscall(void)
 {
   int num;
   struct proc *curproc = myproc();
-  curproc->counter = curproc->counter+1;
+
   num = curproc->tf->eax;
+  curproc->counter[num] = curproc->counter[num]+1;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     curproc->tf->eax = syscalls[num]();
-  } else {
+  } 
+  else {
     cprintf("%d %s: unknown sys call %d\n",
             curproc->pid, curproc->name, num);
     curproc->tf->eax = -1;

@@ -102,5 +102,22 @@ int sys_getnextprime(void){
 }
 
 int sys_getcallcount(void){
-  return myproc()->counter;
+  int syscallid;
+  if(argint(0, &syscallid) < 0)
+    return -1;
+  return myproc()->counter[syscallid];
+}
+
+int sys_getmostcaller(void){
+  int syscallid;
+  if(argint(0, &syscallid) < 0)
+    return -1;
+  return getMostCaller(syscallid);
+}
+
+int sys_waitforprocess(void){
+  int child;
+  if(argint(0, &child) < 0)
+    return -1;
+  return waitForProcess(child);
 }

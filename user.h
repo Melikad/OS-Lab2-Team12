@@ -26,6 +26,8 @@ int uptime(void);
 int getyear(void);
 int getnextprime(void);
 int getcallcount(int);
+int getmostcaller(int);
+int waitforprocess(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -13,7 +13,6 @@ struct {
 } ptable;
 
 static struct proc *initproc;
-
 int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
@@ -89,7 +88,8 @@ found:
   p->state = EMBRYO;
 
   p->pid = nextpid++;
-  p->counter = 0;                 //////////////////////////////////////////////////////////////////////////////////////////////////
+  for(int i = 0; i < 100; i++)
+    p->counter[i] = 0;                 //////////////////////////////////////////////////////////////////////////////////////////////////
 
   release(&ptable.lock);
 
@@ -549,5 +549,65 @@ int find_next_prime_number(int number){
       return number;
     }
     number++;
+  }
+}
+
+int getMostCaller(int syscallid){
+  struct proc *p;
+
+  int mostCallerCnt = 0;
+  int pid = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->counter[syscallid] > mostCallerCnt){
+      mostCallerCnt = syscallid;
+      pid = p->pid;
+    }
+  }
+  return pid;
+}
+
+
+int
+waitForProcess(int process_id)
+{
+  struct proc *p;
+  int procexists, zpid;
+  struct proc *curproc = myproc();
+  
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for exited children.
+    procexists = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->pid != process_id)
+        continue;
+      procexists = 1;
+      if(p->state == ZOMBIE){
+        // Found one.
+        zpid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        freevm(p->pgdir);
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+        release(&ptable.lock);
+        return zpid;
+      }
+    }
+
+
+
+    // No point waiting if we don't have any process.
+    if(!procexists || curproc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    // Wait for pid to exit.  (See wakeup1 call in proc_exit.)
+    sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
