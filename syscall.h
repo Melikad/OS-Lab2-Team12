@@ -22,3 +22,4 @@
 #define SYS_close  21
 #define SYS_getyear 22
 #define SYS_getnextprime 23
+#define SYS_getcallcount 24

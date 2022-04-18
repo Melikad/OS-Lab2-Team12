@@ -105,6 +105,7 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_getyear(void);
 extern int sys_getnextprime(void);
+extern int sys_getcallcount(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -130,6 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_getyear] sys_getyear,
 [SYS_getnextprime] sys_getnextprime,
+[SYS_getcallcount] sys_getcallcount,
 };
 
 void

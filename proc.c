@@ -89,7 +89,7 @@ found:
   p->state = EMBRYO;
 
   p->pid = nextpid++;
-  p->counter = 0;
+  p->counter = 0;                 //////////////////////////////////////////////////////////////////////////////////////////////////
 
   release(&ptable.lock);
 
@@ -532,5 +532,22 @@ procdump(void)
         cprintf(" %p", pc[i]);
     }
     cprintf("\n");
+  }
+}
+
+
+int find_next_prime_number(int number){
+  //int number = myproc()->tf->ebx; register after eax
+  number++;
+  while(1){
+    int flag = 0;
+    for(int i = 2; i < number; i++){
+      if(number%i == 0)
+        flag = 1;
+    }
+    if(!flag){
+      return number;
+    }
+    number++;
   }
 }

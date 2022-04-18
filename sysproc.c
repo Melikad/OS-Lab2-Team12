@@ -96,17 +96,11 @@ int sys_getyear(void){
 }
 
 int sys_getnextprime(void){
-  int number = myproc()->tf->ebx; //register after eax
-  number++;
-  while(1){
-    int flag = 0;
-    for(int i = 2; i < number; i++){
-      if(number%i == 0)
-        flag = 1;
-    }
-    if(!flag){
-      return number;
-    }
-    number++;
-  }
+  int num=myproc()->tf->ebx; //register after eax
+  cprintf("sys_find_next_prime_number()called for %d\n" ,num);
+  return find_next_prime_number(num);
+}
+
+int sys_getcallcount(void){
+  return myproc()->counter;
 }
